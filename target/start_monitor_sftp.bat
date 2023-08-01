@@ -1,0 +1,1 @@
+java -jar D:\SOCITECH\monitoringtransfert\target\monitoringtransfert-1.0-jar-with-dependencies.jar
