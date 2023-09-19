@@ -1,0 +1,2 @@
+put "C:\envoi\9781838989439_ColorImages.pdf" "/delta/9781838989439_ColorImages.pdf " 
+bye 

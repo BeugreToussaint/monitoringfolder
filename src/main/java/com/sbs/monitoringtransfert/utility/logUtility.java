@@ -6,13 +6,11 @@
 package com.sbs.monitoringtransfert.utility;
 
 import com.sbs.monitoringtransfert.config.ConfigProperties;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Properties;
 import java.util.logging.FileHandler;
@@ -20,20 +18,17 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
-import javafx.application.Platform;
-import javafx.scene.control.TextArea;
+
 
 /**
  *
  * @author Tuxbe
+ * @Date 21/07/2023
  */
 public class logUtility {
 
     public static Properties config = ConfigProperties.loadConfig();
 
-    public static void logMessage(TextArea logTextArea, String message) {
-        Platform.runLater(() -> logTextArea.appendText(LocalDateTime.now() + " " + message + "\n"));
-    }
 
     public static void configureLogging(String logDirectory) {
         try {

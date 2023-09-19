@@ -11,7 +11,8 @@ import java.util.Properties;
 
 /**
  *
- * @author SamuelWAYORO
+ * @author Tuxbe
+ * @Date 21/07/2023
  */
 public class ConfigProperties {
     

@@ -13,12 +13,13 @@ import java.util.concurrent.Callable;
 
 /**
  *
- * @author SamuelWAYORO
+ * @author Tuxbe
+ * @Date 21/07/2023
  */
 public class FileSearchTask implements Callable<List<String>> {
 
-    private String directory;
-    private List<String> extensions;
+    private final String directory;
+    private final List<String> extensions;
 
     public FileSearchTask(String directory, List<String> extensions) {
         this.directory = directory;
