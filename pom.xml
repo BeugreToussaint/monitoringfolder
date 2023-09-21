@@ -20,7 +20,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.sbs.monitoringtransfert.monitor.FileSearchExample</mainClass>
+                            <mainClass>com.sbs.monitoringtransfert.monitor.MonitorMain</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
@@ -47,6 +47,7 @@
             <version>0.1.55</version> 
             <scope>compile</scope>
         </dependency>
+
         <dependency>
             <groupId>com.hierynomus</groupId>
             <artifactId>sshj</artifactId>

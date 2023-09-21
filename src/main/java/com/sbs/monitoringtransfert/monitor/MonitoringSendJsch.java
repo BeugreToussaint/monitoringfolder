@@ -25,13 +25,13 @@ import java.util.logging.Logger;
  * @author Tuxbe
  * @Date 21/07/2023
  */
-public class MonitoringSendJsch implements MonitoringSendInterf{
+public class MonitoringSendJsch implements MonitoringSendInterf {
 
     private static final Logger LOG = Logger.getLogger(MonitoringSendJsch.class.getName());
 
     @Override
     public void monitorStart(String logsDir, String[] directories, List<String> extensionsStream,
-            String username, String password, int port, String host, String archiveDirectory, String destinationDir, ExecutorService executorService
+            String username, String password, int port, String host, String archiveDirectory, String destinationDir, ExecutorService executorService, String known_hosts, String keyprivatepath
     ) {
         if (executorService.isShutdown()) {
             executorService = Executors.newFixedThreadPool(5);
@@ -55,9 +55,8 @@ public class MonitoringSendJsch implements MonitoringSendInterf{
                 try {
                     List<String> files = future.get();
 
-                    LOG.log(Level.INFO, "Fichiers trouv\u00e9s dans le r\u00e9pertoire: {0}", files);
-
                     if (!files.isEmpty()) {
+                        LOG.log(Level.INFO, "Fichiers trouv\u00e9s dans le r\u00e9pertoire: {0}", files);
                         // Connexion SFTP
                         JSch jsch = new JSch();
                         Session session = null;
@@ -90,7 +89,6 @@ public class MonitoringSendJsch implements MonitoringSendInterf{
 
                         } catch (JSchException e) {
                             LOG.log(Level.SEVERE, e.getMessage());
-                            e.printStackTrace();
                         } finally {
                             // Fermer la connexion SFTP lorsque vous avez terminé l'envoi des fichiers
                             if (channelSftp != null) {
@@ -104,7 +102,6 @@ public class MonitoringSendJsch implements MonitoringSendInterf{
 
                 } catch (InterruptedException | ExecutionException | RejectedExecutionException ex) {
                     LOG.log(Level.SEVERE, ex.getMessage());
-                    ex.printStackTrace();
                 }
             }
 
@@ -113,7 +110,6 @@ public class MonitoringSendJsch implements MonitoringSendInterf{
                 Thread.sleep(5000); // Attente de 5 secondes avant la prochaine boucle
             } catch (InterruptedException e) {
                 LOG.log(Level.SEVERE, e.getMessage());
-                e.printStackTrace();
             }
 
         }

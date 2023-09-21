@@ -14,7 +14,7 @@ import java.util.concurrent.ExecutorService;
 public interface MonitoringSendInterf {
 
     void monitorStart(String logsDir, String[] directories, List<String> extensionsStream,
-            String username, String password, int port, String host, String archiveDirectory, String destinationDir, ExecutorService executorService
+            String username, String password, int port, String host, String archiveDirectory, String destinationDir, ExecutorService executorService,  String known_hosts, String keyprivatepath
     );
 
     void monitorStop(ExecutorService executorService);

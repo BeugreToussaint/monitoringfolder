@@ -34,13 +34,16 @@ public class MonitorMain {
     static String password = CONFIG.getProperty("server.password", "password"); // or use key-based authentication
     static String destinationDir = CONFIG.getProperty("server.destination.dir", "/");
 
+    static String keyprivatepath = CONFIG.getProperty("server.keyprivatepath", ".ssh/id_rsa");
+    static String known_hosts = CONFIG.getProperty("server.known_hosts", "/known_hosts");
+    
     public static void main(String[] args) {
 
         // Création d'un ExecutorService avec un pool de 5 threads
         ExecutorService executorService = Executors.newFixedThreadPool(5);
 
         MonitoringSendInterf monitor = new MonitoringSendJsch();
-        monitor.monitorStart(logsDir, directories, extensionsStream, username, password, port, host, archiveDirectory, destinationDir, executorService);
+        monitor.monitorStart(logsDir, directories, extensionsStream, username, password, port, host, archiveDirectory, destinationDir, executorService, known_hosts, keyprivatepath);
 
     }
 }

@@ -7,6 +7,7 @@ package com.sbs.monitoringtransfert.monitor;
 
 import com.sbs.monitoringtransfert.utility.FileUtility;
 import com.sbs.monitoringtransfert.utility.logUtility;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,8 +18,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.sftp.SFTPClient;
-import net.schmizz.sshj.transport.TransportException;
-import net.schmizz.sshj.userauth.UserAuthException;
+import net.schmizz.sshj.transport.verification.PromiscuousVerifier;
+import net.schmizz.sshj.userauth.keyprovider.PuTTYKeyFile;
+import org.bouncycastle.openssl.PasswordFinder;
 
 /**
  * @author Tuxbe
@@ -30,7 +32,7 @@ public class MonitoringSendSSHj implements MonitoringSendInterf {
 
     @Override
     public void monitorStart(String logsDir, String[] directories, List<String> extensionsStream,
-            String username, String password, int portSftp, String host, String archiveDirectory, String destinationDir, ExecutorService executorService) {
+            String username, String password, int portSftp, String host, String archiveDirectory, String destinationDir, ExecutorService executorService, String known_hosts, String keyprivatepath) {
 
         logUtility.configureLogging(logsDir);
 
@@ -50,28 +52,31 @@ public class MonitoringSendSSHj implements MonitoringSendInterf {
                 try {
                     List<String> files = future.get();
 
-                    LOG.log(Level.INFO, "Fichiers trouv\u00e9s dans le r\u00e9pertoire: {0}", files);
-
                     if (!files.isEmpty()) {
-
+                        LOG.log(Level.INFO, "Fichiers trouv\u00e9s dans le r\u00e9pertoire: {0}", files);
                         // Connexion SFTP
                         SSHClient ssh = new SSHClient();
                         try {
-                            ssh.loadKnownHosts();
+
+                            ssh.loadKeys(keyprivatepath);
                             ssh.addHostKeyVerifier((hostname, port, key) -> true);
+                            ssh.addAlgorithmsVerifier(algorithms -> true);
                             ssh.connect(host);
+                            ssh.authPublickey(username);
+                            // Load the public key from the file
+                            LOG.log(Level.INFO, "Connexion sftp réussi !"); // Fermer la connexion SFTP lorsque vous avez terminé l'envoi des fichiers
+
                         } catch (IOException ex) {
                             Logger.getLogger(MonitoringSendSSHj.class.getName()).log(Level.SEVERE, null, ex);
+
                         }
-                        
-                        try {
+
+                        /*                    try {
                             ssh.authPassword(username, password);
                         } catch (UserAuthException | TransportException ex) {
                             Logger.getLogger(MonitoringSendSSHj.class.getName()).log(Level.SEVERE, null, ex);
                         }
-
-                        LOG.log(Level.INFO, "Connexion sftp réussi !"); // Fermer la connexion SFTP lorsque vous avez terminé l'envoi des fichiers
-
+                         */
                         try (SFTPClient sftp = ssh.newSFTPClient()) {
 
                             for (String filePath : files) {
