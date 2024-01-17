@@ -5,6 +5,7 @@
 package com.sbs.monitoringtransfert.monitor;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -15,7 +16,7 @@ public interface MonitoringSendInterf {
 
     void monitorStart(String logsDir, String[] directories, List<String> extensionsStream,
             String username, String password, int port, String host, String archiveDirectory, String destinationDir, ExecutorService executorService,  String known_hosts, String keyprivatepath
-    );
+    ) throws ExecutionException, InterruptedException;
 
     void monitorStop(ExecutorService executorService);
 }

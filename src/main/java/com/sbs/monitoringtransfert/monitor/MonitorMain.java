@@ -8,6 +8,7 @@ import com.sbs.monitoringtransfert.config.ConfigProperties;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -36,13 +37,24 @@ public class MonitorMain {
 
     static String keyprivatepath = CONFIG.getProperty("server.keyprivatepath", ".ssh/id_rsa");
     static String known_hosts = CONFIG.getProperty("server.known_hosts", "/known_hosts");
+
+    static String type_send = CONFIG.getProperty("app.type.send", "FTP");
+
+
     
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
 
         // Création d'un ExecutorService avec un pool de 5 threads
         ExecutorService executorService = Executors.newFixedThreadPool(5);
 
-        MonitoringSendInterf monitor = new MonitoringSendJsch();
+        MonitoringSendInterf monitor = null;
+
+        if (type_send.equals("SFTP")) {
+            monitor = new MonitoringSendJsch();
+        } else {
+            monitor = new MonitoringSendFTPClient();
+        }
+
         monitor.monitorStart(logsDir, directories, extensionsStream, username, password, port, host, archiveDirectory, destinationDir, executorService, known_hosts, keyprivatepath);
 
     }

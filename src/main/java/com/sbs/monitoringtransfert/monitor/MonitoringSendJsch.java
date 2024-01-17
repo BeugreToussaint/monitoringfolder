@@ -11,7 +11,9 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.sbs.monitoringtransfert.utility.FileUtility;
 import com.sbs.monitoringtransfert.utility.logUtility;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -65,26 +67,49 @@ public class MonitoringSendJsch implements MonitoringSendInterf {
 
                             session = jsch.getSession(username, host, port);
 
-                            session.setPassword(password);
-                            // Disable host key checking
-                            session.setConfig("StrictHostKeyChecking", "no");
+                            try {
 
-                            // session.setConfig("PreferredAuthentications", "password,keyboard-interactive");
-                            session.connect();
+                                // Your secret key and initialization vector (IV)
+                                String secretKey = "S0CITECHBUSINE$$";
+                                String initVector = "S0CITECHBUSINE$$";
 
-                            channelSftp = (ChannelSftp) session.openChannel("sftp");
-                            channelSftp.connect();
-                            LOG.log(Level.INFO, "Connexion sftp réussi !");
+                                // Encrypt the string
+                                /* byte[] encryptedBytes = FileUtility.encrypt("password", secretKey, initVector);
+                                String encryptedText = Base64.getEncoder().encodeToString(encryptedBytes);
+                                System.out.println("Encrypted: " + encryptedText);
+                                 */
+                                // Decode the Base64-encoded ciphertext
+                                byte[] encryptedBytes = Base64.getDecoder().decode(password);
 
-                            for (String filePath : files) {
-                                // Envoyer les fichiers via SFTP                            
-                                boolean sentSuccessfully = FileUtility.sendFileViaSftpJsch(channelSftp, filePath, destinationDir);
-                                if (sentSuccessfully) {
-                                    // Archiver le fichier une fois envoyé avec succès
-                                    FileUtility.archiveFile(filePath, archiveDirectory);
-                                } else {
-                                    LOG.log(Level.INFO, "L''envoie du fichier : {0} a \u00e9chou\u00e9 !", filePath);
+                                // Decrypt the string
+                                String decryptedText = FileUtility.decrypt(encryptedBytes, secretKey, initVector);
+                                System.out.println("Decrypted: " + decryptedText);
+                                session.setPassword(decryptedText);
+                                // Disable host key checking
+                                session.setConfig("StrictHostKeyChecking", "no");
+
+                                // session.setConfig("PreferredAuthentications", "password,keyboard-interactive");
+                                session.connect();
+
+                                channelSftp = (ChannelSftp) session.openChannel("sftp");
+                                channelSftp.connect();
+                                LOG.log(Level.INFO, "Connexion sftp réussi !");
+
+                                for (String filePath : files) {
+                                    // Envoyer les fichiers via SFTP                            
+                                    boolean sentSuccessfully = FileUtility.sendFileViaSftpJsch(channelSftp, filePath, destinationDir);
+                                    if (sentSuccessfully) {
+                                        // Archiver le fichier une fois envoyé avec succès
+                                        FileUtility.archiveFile(filePath, archiveDirectory);
+                                    } else {
+                                        LOG.log(Level.INFO, "L'envoie du fichier : {0} a \u00e9chou\u00e9 !", filePath);
+                                    }
                                 }
+
+                            } catch (NoSuchAlgorithmException ex) {
+                                Logger.getLogger(MonitoringSendJsch.class.getName()).log(Level.SEVERE, null, ex);
+                            } catch (Exception ex) {
+                                Logger.getLogger(MonitoringSendJsch.class.getName()).log(Level.SEVERE, null, ex);
                             }
 
                         } catch (JSchException e) {
